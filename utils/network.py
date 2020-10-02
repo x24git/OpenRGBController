@@ -3,7 +3,7 @@ import socket
 import select
 from typing import Optional, Callable, List
 import warnings
-from shared import UniqueSingleton, SessionRedefinitionWarning, SessionTimeout, SessionLost
+from shared import UniqueSingleton, SessionRedefinitionWarning, SessionTimeout, SessionLost, SessionOffline
 import utils.globals as setup
 
 
@@ -28,9 +28,9 @@ class RawNetworkHandler(object, metaclass=UniqueSingleton):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
             self.socket.connect((self.address, self.port))
-        except ConnectionRefusedError:
+        except ConnectionRefusedError as e:
             self.socket = None
-            raise
+            raise SessionOffline from e
 
     def close_session(self):
         if not self.socket:
@@ -39,7 +39,7 @@ class RawNetworkHandler(object, metaclass=UniqueSingleton):
         self.socket.close()
         self.socket = None
 
-    def receive(self, size: int, callback: Callable[[bytes], any]):
+    def receive(self, size: int, callback: Callable[[bytes], any] = None):
         if not self.socket:
             raise SessionLost
         self.socket.setblocking(False)
@@ -54,7 +54,10 @@ class RawNetworkHandler(object, metaclass=UniqueSingleton):
             if data == '\x00' * size:
                 self.close_session()
                 raise SessionLost("Empty response received. Session Terminated!")
-            callback(data)
+            if callback:
+                callback(data)
+            else:
+                return data
         else:
             raise SessionTimeout('No reply received within allotted timeout period.')
 

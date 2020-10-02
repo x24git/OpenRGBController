@@ -3,7 +3,7 @@ class UniqueSingleton(type):
 
     @classmethod
     def make_hash(mcs, *args, **kwargs):
-        return hash(kwargs) + hash(args)
+        return hash(frozenset(kwargs)) + hash(args)
 
     def __call__(cls, *args, **kwargs):
         hash_cache = cls.make_hash(*args, **kwargs)
@@ -23,4 +23,8 @@ class SessionTimeout(TimeoutError):
 
 
 class SessionLost(ConnectionResetError):
+    pass
+
+
+class SessionOffline(ConnectionRefusedError):
     pass

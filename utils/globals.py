@@ -1,12 +1,16 @@
 from enum import IntEnum, IntFlag
-from shared import SessionTimeout, SessionLost
+from shared import SessionTimeout, SessionLost, SessionOffline
 
 DEFAULT_PORT = 6742
 DEFAULT_ADDRESS = '127.0.0.1'
 DEFAULT_TIMEOUT = 5
+RETRY_TIMEOUT = 10
+RETRY_LIMIT = 12
+HEADER_SIZE = 16
 
-CONNECTION_ERRORS = (SessionTimeout, SessionLost)
+CONNECTION_ERRORS = (SessionTimeout, SessionLost, SessionOffline)
 
+MAGIC_ID = bytes('ORGB', 'UTF-8')
 
 class ModeFlags(IntFlag):
     HAS_SPEED = (1 << 0)
@@ -55,13 +59,16 @@ class ZoneType(IntEnum):
     MATRIX = 2
 
 
-class PacketType(IntEnum):
-    REQUEST_CONTROLLER_COUNT = 0
-    REQUEST_CONTROLLER_DATA = 1
+class SetterPacketType(IntEnum):
     SET_CLIENT_NAME = 50
-    RGBCONTROLLER_RESIZEZONE = 1000
-    RGBCONTROLLER_UPDATELEDS = 1050
-    RGBCONTROLLER_UPDATEZONELEDS = 1051
-    RGBCONTROLLER_UPDATESINGLELED = 1052
-    RGBCONTROLLER_SETCUSTOMMODE = 1100
-    RGBCONTROLLER_UPDATEMODE = 1101
+    RESIZEZONE = 1000
+    UPDATELEDS = 1050
+    UPDATEZONELEDS = 1051
+    UPDATESINGLELED = 1052
+    SETCUSTOMMODE = 1100
+    UPDATEMODE = 1101
+
+
+class GetterPacketType(IntEnum):
+    CONTROLLER_COUNT = 0
+    CONTROLLER_DATA = 1
