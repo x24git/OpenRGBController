@@ -14,7 +14,13 @@ class UniqueSingleton(type):
         return cls._instances[hash_cache]
 
 
-class SessionExistsWarning(RuntimeWarning):
-    def __init__(self, *args):
-        super(SessionExistsWarning, self).__init__("An existing session for this handler exists. "
-                                                   "Close the existing session before opening a new session.")
+class SessionRedefinitionWarning(RuntimeWarning):
+    pass
+
+
+class SessionTimeout(TimeoutError):
+    pass
+
+
+class SessionLost(ConnectionResetError):
+    pass
