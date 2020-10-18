@@ -72,3 +72,4 @@ class SetterPacketType(IntEnum):
 class GetterPacketType(IntEnum):
     CONTROLLER_COUNT = 0
     CONTROLLER_DATA = 1
+    DEVICE_LIST_UPDATED = 100

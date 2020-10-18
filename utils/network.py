@@ -19,6 +19,7 @@ class RawNetworkHandler(object, metaclass=UniqueSingleton):
     def __init__(self, address: str = setup.DEFAULT_ADDRESS, port: int = setup.DEFAULT_PORT):
         self.address = address
         self.port = port
+        self.timeout = setup.DEFAULT_TIMEOUT
         self.socket: Optional[socket.socket] = None
 
     def open_session(self):
@@ -43,8 +44,8 @@ class RawNetworkHandler(object, metaclass=UniqueSingleton):
         if not self.socket:
             raise SessionLost
         self.socket.setblocking(False)
-        read_sockets, write_sockets, error_sockets = select.select([self.socket], [], [], setup.DEFAULT_TIMEOUT)
-        if read_sockets[0]:
+        read_sockets, write_sockets, error_sockets = select.select([self.socket], [], [], self.timeout)
+        if len(read_sockets) > 0 and read_sockets[0]:
             data = bytearray(size)
             try:
                 self.socket.recv_into(data)
