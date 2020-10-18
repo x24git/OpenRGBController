@@ -56,7 +56,7 @@ class OpenRGBNetworkLayer(RawNetworkHandler):
                 try:
                     data = super().receive(packet_size)
                     if callback:
-                        callback(device_id, data[0])
+                        callback(device_id, data)
                     else:
                         return data
                 except setup.CONNECTION_ERRORS as e:
