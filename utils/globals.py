@@ -1,4 +1,8 @@
+import colorsys
+from dataclasses import dataclass
 from enum import IntEnum, IntFlag
+from typing import TypedDict
+
 from shared import SessionTimeout, SessionLost, SessionOffline
 
 DEFAULT_PORT = 6742
@@ -17,6 +21,7 @@ class ModeFlags(IntFlag):
     HAS_DIRECTION_LR = (1 << 1)
     HAS_DIRECTION_UD = (1 << 2)
     HAS_DIRECTION_HV = (1 << 3)
+    HAS_DIRECTION = 14
     HAS_BRIGHTNESS = (1 << 4)
     HAS_PER_LED_COLOR = (1 << 5)
     HAS_MODE_SPECIFIC_COLOR = (1 << 6)
@@ -30,6 +35,7 @@ class ModeDirections(IntEnum):
     DOWN = 3
     HORIZONTAL = 4
     VERTICAL = 5
+    NOTAPPLICABLE = 10
 
 
 class ModeColors(IntEnum):
@@ -73,3 +79,22 @@ class GetterPacketType(IntEnum):
     CONTROLLER_COUNT = 0
     CONTROLLER_DATA = 1
     DEVICE_LIST_UPDATED = 100
+
+
+@dataclass
+class ValueRange:
+    min: int
+    max: int
+    current: int
+
+
+@dataclass
+class Color(object):
+    red: int
+    green: int
+    blue: int
+
+    @classmethod
+    def fromHSV(cls, hue: int, saturation: int, value: int):
+        return cls(*(round(i * 255) for i in colorsys.hsv_to_rgb(hue / 360, saturation / 100, value / 100)))
+

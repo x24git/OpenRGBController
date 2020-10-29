@@ -28,3 +28,4 @@ class SessionLost(ConnectionResetError):
 
 class SessionOffline(ConnectionRefusedError):
     pass
+

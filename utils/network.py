@@ -1,6 +1,7 @@
 import sys
 import socket
 import select
+import struct
 from typing import Optional, Callable, List
 import warnings
 from shared import UniqueSingleton, SessionRedefinitionWarning, SessionTimeout, SessionLost, SessionOffline
@@ -70,3 +71,8 @@ class RawNetworkHandler(object, metaclass=UniqueSingleton):
         except SESSION_ERRORS as e:
             self.close_session()
             raise SessionLost from e
+
+
+def unpack_helper(fmt, data):
+    size = struct.calcsize(fmt)
+    return struct.unpack(fmt, data[:size]), data[size:]
